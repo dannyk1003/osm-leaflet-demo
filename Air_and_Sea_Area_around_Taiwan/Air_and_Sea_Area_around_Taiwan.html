@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air and Sea Area around Taiwan</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
+            padding: 5px;
+            text-align: left;
+        }
+
+        #table-wrapper {
+            max-height: 600px;
+            /* 設置最大高度，根據實際需求調整 */
+            overflow-y: auto;
+            /* 啟用垂直滾動 */
+            width: 100%;
+            /* 確保容器占滿寬度 */
+        }
+
+        #table-container {
+            width: 100%;
+            /* 確保表格占滿容器寬度 */
+        }
+
+        .checkbox {
+            margin-right: 8px;
+        }
+
+        .status-dot {
+            height: 15px;
+            width: 15px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="table-wrapper">
+        <div id="table-container"></div>
+    </div>
+
+    <script>
+        fetch('../data/Air_and_Sea_Area_around_Taiwan.json')
+            .then(response => response.json())
+            .then(json => {
+                const regionData = json; // 陣列形式的資料
+                const container = document.getElementById('table-container');
+
+                regionData.forEach((item, index) => {
+                    const wrapper = document.createElement('div');
+
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.id = `region-${item.ID}`;
+                    checkbox.value = item.ID;
+
+                    checkbox.addEventListener('change', function() {
+                        window.parent.postMessage({ source: 'Air_and_Sea_Area_around_Taiwan', id: checkbox.id, checked: this.checked, lonlat: item.lonlat, name: item.name}, '*');
+                    });
+
+                    const label = document.createElement('label');
+                    label.htmlFor = `region-${item.ID}`;
+                    label.textContent = item.name;
+
+                    wrapper.appendChild(checkbox);
+                    wrapper.appendChild(label);
+                    container.appendChild(wrapper);
+                });
+            })
+            .catch(error => {
+                console.error('載入失敗:', error);
+            });
+
+    </script>
+</body>
+
+</html>
